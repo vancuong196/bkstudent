@@ -6,13 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.kuon.bkstudent.models.Message;
-import com.kuon.bkstudent.models.Notification;
 
 import java.util.ArrayList;
 
 
 public class MessageDb extends SQLiteOpenHelper {
-
 
     private static final int VERSION = 1;
     private static final String DATABASE_NAME = "bkstudent_message_db";
@@ -70,6 +68,7 @@ public class MessageDb extends SQLiteOpenHelper {
         if (cursor != null &&  cursor.moveToFirst()) {
             time = cursor.getString(0);
             db.close();
+            cursor.close();
             return time;
         } else {
             db.close();
@@ -94,6 +93,7 @@ public class MessageDb extends SQLiteOpenHelper {
                 Message message = new Message(userId,userName,content,time,conservationId);
                 messages.add(message);
             } while (cursor.moveToNext());
+            cursor.close();
         }
         db.close();
         return messages;

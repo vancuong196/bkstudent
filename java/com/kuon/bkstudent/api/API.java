@@ -1,6 +1,4 @@
 package com.kuon.bkstudent.api;
-import android.util.JsonReader;
-
 import com.kuon.bkstudent.exceptions.CanNotMakeConservationException;
 import com.kuon.bkstudent.exceptions.ConservationNotFound;
 import com.kuon.bkstudent.exceptions.LoginFailedException;
@@ -14,6 +12,10 @@ import com.kuon.bkstudent.models.Message;
 import com.kuon.bkstudent.models.Notification;
 import com.kuon.bkstudent.models.UserInfo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +24,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
 public class API {
 
@@ -42,8 +39,7 @@ public class API {
             String response = jsonResult.getString("responde");
             if ("ok".equals(response)){
 
-                String token = jsonResult.getString("token");
-                return token;
+                return jsonResult.getString("token");
             }
             else{
                 String reason = jsonResult.getString("reason");
@@ -73,7 +69,7 @@ public class API {
             String date = jsonResult.getString("date");
             System.out.print("Date: '"+date+"'");
             ArrayList<DateRecord> drs = new ArrayList<>();
-            if (date!=null || date =="") {
+            if (date!=null) {
                 String[] dates = date.split(",");
 
                 if (dates.length > 0) {
@@ -308,7 +304,7 @@ public class API {
 
 
 
-    public static String readAll(Reader rd) throws IOException
+    private static String readAll(Reader rd) throws IOException
     {
             StringBuilder sb = new StringBuilder();
             int cp;
@@ -318,32 +314,24 @@ public class API {
             return sb.toString();
         }
 
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-            InputStream is = new URL(url).openStream();
-            try {
-                BufferedReader rd = new BufferedReader
-                        (new InputStreamReader(is, Charset.forName("UTF-8")));
-                String jsonText = readAll(rd);
-                System.out.println(jsonText);
-
-                JSONObject json = new JSONObject(jsonText);
-                return json;
-            } finally {
-                is.close();
-            }
-        }
-    public static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
+    private static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader
                     (new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = readAll(rd);
             System.out.println(jsonText);
-            JSONArray jsonArray = new JSONArray(jsonText);
 
-            return jsonArray;
-        } finally {
-            is.close();
+            return new JSONObject(jsonText);
+        }
+        }
+    private static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
+        try (InputStream is = new URL(url).openStream()) {
+            BufferedReader rd = new BufferedReader
+                    (new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            System.out.println(jsonText);
+
+            return new JSONArray(jsonText);
         }
     }
     }

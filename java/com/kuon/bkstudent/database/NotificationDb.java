@@ -66,6 +66,7 @@ public class NotificationDb extends SQLiteOpenHelper {
         if (cursor != null &&  cursor.moveToFirst()) {
             time = cursor.getString(0);
             db.close();
+            cursor.close();
             return time;
         } else {
             db.close();
@@ -89,6 +90,7 @@ public class NotificationDb extends SQLiteOpenHelper {
                 Notification notification = new Notification(time,title,content);
                 notifications.add(notification);
             } while (cursor.moveToNext());
+            cursor.close();
         }
         db.close();
         return notifications;
