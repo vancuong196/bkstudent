@@ -1,16 +1,10 @@
-package com.kuon.bkstudent.fragments;
+package com.kuon.bkstudent.activities;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.kuon.bkstudent.R;
@@ -27,58 +21,30 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import co.intentservice.chatui.ChatView;
 import co.intentservice.chatui.models.ChatMessage;
 
-
-public class ChatFragment extends Fragment {
+public class ChatActivty extends AppCompatActivity {
     MessageDb messageDb;
     ChatView chatView;
     String token;
     String userId;
     SettingManager settingManager;
     Handler handler;
-
+    String conservationId;
     Boolean block =false;
-    private static ChatFragment fragment = new ChatFragment();
-    public ChatFragment() {
-        // Required empty public constructor
-    }
-
-
-    // TODO: Rename and change types and number of parameters
-    public static ChatFragment newInstance() {
-      //  Bundle args = new Bundle();
-      //  args.putString(ARG_PARAM1, param1);
-       // args.putString(ARG_PARAM2, param2);
-      //  fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settingManager = SettingManager.getInstance(getActivity());
+        Intent myIntent = getIntent();
+        conservationId = myIntent.getStringExtra("conservationId");
+        setContentView(R.layout.activity_chat_activty);
+        settingManager = SettingManager.getInstance(this);
         token = settingManager.getToken();
         userId = settingManager.getUser();
-        messageDb = new MessageDb(getActivity());
-
-    }
-    public void addHisotryMessage(){
-        ArrayList<Message> messages = messageDb.getAllMessage();
-        ArrayList<ChatMessage> chatMessages = new ArrayList<>();
-        for (Message message: messages){
-            chatMessages.add(message.toChatMessage(message.getUserId().equals(this.userId)? ChatMessage.Type.SENT: ChatMessage.Type.RECEIVED));
-        }
-        chatView.addMessages(chatMessages);
-    }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        chatView = view.findViewById(R.id.chat_view);
+        messageDb = new MessageDb(this);
+        chatView = findViewById(R.id.chat_view);
         addHisotryMessage();
 
         handler = new Handler();
@@ -86,7 +52,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void run() {
                 if (!block) {
-                    new FetchMessageTask(token).execute();
+                    new FetchMessageTask(token, conservationId).execute();
                 }
                 handler.postDelayed(this,1000);
             }
@@ -94,34 +60,34 @@ public class ChatFragment extends Fragment {
         chatView.setOnSentMessageListener(new ChatView.OnSentMessageListener() {
             @Override
             public boolean sendMessage(ChatMessage chatMessage) {
-                new PushMessageTask(token,chatMessage.getMessage()).execute();
+                new PushMessageTask(token,conservationId,chatMessage.getMessage()).execute();
                 chatView.getInputEditText().setText("");
                 return false;
             }
         });
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.chat_fragment_layout, container, false);
+    public void addHisotryMessage(){
+        ArrayList<Message> messages = messageDb.getAllMessage(this.conservationId);
+        ArrayList<ChatMessage> chatMessages = new ArrayList<>();
+        for (Message message: messages){
+            chatMessages.add(message.toChatMessage(message.getUserId().equals(this.userId)? ChatMessage.Type.SENT: ChatMessage.Type.RECEIVED));
+        }
+        chatView.addMessages(chatMessages);
     }
-
-
     public class FetchMessageTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String token;
         int errorCode;
         ArrayList<Message> newMessage;
+        String conservationId;
         private static final int CONNECTION_FAILED=1;
         private static final int LOGIN_FAILED=2;
         private static final int API_FAILED=3;
         private static final int JSON_FAILED=4;
 
-        FetchMessageTask(String token) {
+        FetchMessageTask(String token, String id) {
             this.token = token;
-
+            this.conservationId = id;
         }
 
         @Override
@@ -133,9 +99,9 @@ public class ChatFragment extends Fragment {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            String time = messageDb.getMaxTime();
+            String time = messageDb.getMaxTime(this.conservationId);
             try {
-                newMessage = API.getNewMessage(token,time);
+                newMessage = API.getNewMessage(token,this.conservationId,time);
                 System.out.print("Done ------------------------------");
                 if (newMessage==null){
                     errorCode = 1;
@@ -184,30 +150,6 @@ public class ChatFragment extends Fragment {
                 }
 
             }
-// else {
-//                switch (errorCode){
-//                    case API_FAILED:
-//                        Toast.makeText(getActivity(),"Missing api parameter",Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case JSON_FAILED:
-//                        Toast.makeText(getActivity(),"Unknown respond from server",Toast.LENGTH_SHORT).show();
-//
-//                        break;
-//                    case CONNECTION_FAILED:
-//                        Toast.makeText(getActivity(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case LOGIN_FAILED:
-//                        Toast.makeText(getActivity(),"Login using token failed",Toast.LENGTH_SHORT).show();
-//                        break;
-//                    default:
-//                        Toast.makeText(getActivity(),"New message not found",Toast.LENGTH_SHORT).show();
-//
-//                        break;
-//                }
-
-
-//            }
-
         }
 
         @Override
@@ -223,14 +165,16 @@ public class ChatFragment extends Fragment {
         private final String content;
         private Message message;
         int errorCode;
+        String conservationId;
         private static final int CONNECTION_FAILED=1;
         private static final int LOGIN_FAILED=2;
         private static final int API_FAILED=3;
         private static final int JSON_FAILED=4;
 
-        PushMessageTask(String token,String content) {
+        PushMessageTask(String token,String id,String content) {
             this.token = token;
             this.content = content;
+            this.conservationId = id;
         }
 
         @Override
@@ -239,7 +183,7 @@ public class ChatFragment extends Fragment {
 
 
             try {
-                message = API.sendMessage(token,content);
+                message = API.sendMessage(token,this.conservationId,content);
                 System.out.print("Done ------------------------------");
                 if (message==null){
                     errorCode = 1;
@@ -265,7 +209,7 @@ public class ChatFragment extends Fragment {
                 errorCode = 3;
                 return false;
             }
-             catch (MessageCannotBeSentException e) {
+            catch (MessageCannotBeSentException e) {
                 errorCode = 5;
                 return false;
             }
@@ -279,29 +223,29 @@ public class ChatFragment extends Fragment {
 
             if (success) {
                 if (message!=null){
-                        messageDb.addMessage(message);
-                        if (chatView!=null) {
-                            chatView.addMessage(message.toChatMessage(ChatMessage.Type.SENT));
-                        }
-                     }
-            // TODO add show code here
+                    messageDb.addMessage(message);
+                    if (chatView!=null) {
+                        chatView.addMessage(message.toChatMessage(ChatMessage.Type.SENT));
+                    }
+                }
+                // TODO add show code here
             } else {
                 switch (errorCode){
                     case API_FAILED:
-                        Toast.makeText(getActivity(),"Missing api parameter",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatActivty.this,"Missing api parameter",Toast.LENGTH_SHORT).show();
                         break;
                     case JSON_FAILED:
-                        Toast.makeText(getActivity(),"Unknown respond from server",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Unknown respond from server",Toast.LENGTH_SHORT).show();
 
                         break;
                     case CONNECTION_FAILED:
-                        Toast.makeText(getActivity(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
                         break;
                     case LOGIN_FAILED:
-                        Toast.makeText(getActivity(),"Login using token failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Login using token failed",Toast.LENGTH_SHORT).show();
                         break;
                     default:
-                        Toast.makeText(getActivity(),"Cant not send message",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Cant not send message",Toast.LENGTH_SHORT).show();
                         break;
                 }
 
@@ -314,6 +258,5 @@ public class ChatFragment extends Fragment {
 
         }
     }
-
 
 }

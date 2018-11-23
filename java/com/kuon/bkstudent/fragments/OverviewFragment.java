@@ -15,8 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kuon.bkstudent.R;
+import com.kuon.bkstudent.activities.ChangePasswordActivity;
 import com.kuon.bkstudent.activities.LoginActivity;
-import com.kuon.bkstudent.activities.MainActivity;
 import com.kuon.bkstudent.adapters.DateHistoryAdapter;
 import com.kuon.bkstudent.api.API;
 import com.kuon.bkstudent.exceptions.LoginFailedException;
@@ -82,12 +82,21 @@ public class OverviewFragment extends Fragment {
         mEdtCountDate = view.findViewById(R.id.edt_count_date);
         mEdtPercent = view.findViewById(R.id.edt_percent);
         mHistoryListview = view.findViewById(R.id.listview_history);
+        Button btnChangePassword = view.findViewById(R.id.btn_change_password);
         btnLogout = view.findViewById(R.id.btn_logout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 settingManager.setToken("");
                 Intent myIntent = new Intent(getActivity(), LoginActivity.class);
+                getActivity().startActivity(myIntent);
+                getActivity().finish();
+            }
+        });
+        btnChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getActivity(), ChangePasswordActivity.class);
                 getActivity().startActivity(myIntent);
                 getActivity().finish();
             }

@@ -12,14 +12,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kuon.bkstudent.R;
-import com.kuon.bkstudent.fragments.ChatFragment;
+import com.kuon.bkstudent.fragments.ConservationFragment;
 import com.kuon.bkstudent.fragments.NotificationFragment;
 import com.kuon.bkstudent.fragments.OverviewFragment;
 
 public class MainActivity extends AppCompatActivity {
 
 
-    private Fragment chatFragment;
+    private Fragment conservationFragment;
     private Fragment notificationFragment;
     private Fragment overviewFragment;
     Handler handler = new Handler();
@@ -42,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
     }
     private void showChatFragment(){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (chatFragment.isAdded()) { // if the fragment is already in container
-            ft.show(chatFragment);
+        if (conservationFragment.isAdded()) { // if the fragment is already in container
+            ft.show(conservationFragment);
         } else { // fragment needs to be added to frame container
-            ft.add(R.id.root_layout, chatFragment, "A");
+            ft.add(R.id.root_layout, conservationFragment, "A");
         }
         // Hide fragment B
         if (notificationFragment.isAdded()) { ft.hide(notificationFragment); }
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             ft.add(R.id.root_layout, overviewFragment, "A");
         }
         // Hide fragment B
-        if (chatFragment.isAdded()) { ft.hide(chatFragment); }
+        if (conservationFragment.isAdded()) { ft.hide(conservationFragment); }
         // Hide fragment C
         if (notificationFragment.isAdded()) { ft.hide(notificationFragment); }
         // Commit changes
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             ft.add(R.id.root_layout, notificationFragment, "A");
         }
         // Hide fragment B
-        if (chatFragment.isAdded()) { ft.hide(chatFragment); }
+        if (conservationFragment.isAdded()) { ft.hide(conservationFragment); }
         // Hide fragment C
         if (overviewFragment.isAdded()) { ft.hide(overviewFragment); }
         // Commit changes
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        chatFragment = new ChatFragment();
+        conservationFragment = new ConservationFragment();
         notificationFragment = new NotificationFragment();
         overviewFragment = new OverviewFragment();
         FragmentManager manager = getSupportFragmentManager();
 
-        manager.beginTransaction().add(R.id.root_layout, chatFragment);
+        manager.beginTransaction().add(R.id.root_layout, conservationFragment);
         manager.beginTransaction().add(R.id.root_layout, overviewFragment);
         manager.beginTransaction().add(R.id.root_layout, notificationFragment);
 

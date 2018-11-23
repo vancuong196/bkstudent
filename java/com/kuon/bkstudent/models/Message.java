@@ -12,13 +12,15 @@ public class Message {
     private String userID;
     private String content;
     private String time;
+    private String conservationId;
     
 
-    public Message(String userID, String userName,String content, String time) {
+    public Message(String userID, String userName,String content, String time, String conservationId) {
         this.userID = userID;
         this.userName = userName;
         this.time = time;
         this.content = content;
+        this.conservationId =conservationId;
     }
     public String getTime() {
         return time;
@@ -51,6 +53,15 @@ public class Message {
     public ChatMessage toChatMessage(ChatMessage.Type type){
             return new ChatMessage("From : "+this.userName+"\n"+this.content,getTime(this.time),type);
     }
+
+    public String getConservationId() {
+        return conservationId;
+    }
+
+    public void setConservationId(String conservationId) {
+        this.conservationId = conservationId;
+    }
+
     private long getTime(String datetime){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {

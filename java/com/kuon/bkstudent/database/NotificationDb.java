@@ -61,7 +61,7 @@ public class NotificationDb extends SQLiteOpenHelper {
     public String getMaxTime() {
         String time = "2018-01-01 00:00:00.000000";
         SQLiteDatabase db = this.getReadableDatabase();
-        String statement = "SELECT TIME FROM " + TABLE_NAME + " ORDER BY " + TIME + " DESC LIMIT 1";
+        String statement = "SELECT "+TIME+" FROM " + TABLE_NAME + " ORDER BY " + TIME + " DESC LIMIT 1";
         Cursor cursor = db.rawQuery(statement, null);
         if (cursor != null &&  cursor.moveToFirst()) {
             time = cursor.getString(0);

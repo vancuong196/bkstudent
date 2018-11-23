@@ -21,6 +21,7 @@ public class MessageDb extends SQLiteOpenHelper {
     private static final String USERNAME = "user_name";
     private static final String CONTENT = "content";
     private static final String TIME = "time";
+    private static final String CONSERVATIONID = "con_id";
 
     public MessageDb(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -30,11 +31,11 @@ public class MessageDb extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String script = "CREATE TABLE " + TABLE_NAME + " (" +
-
                 USERID + " TEXT, " +
                 USERNAME + " TEXT, " +
                 CONTENT + " TEXT, " +
-                TIME + " TEXT)";
+                TIME + " TEXT, " +
+                CONSERVATIONID + " TEXT)";
         db.execSQL(script);
 
     }
@@ -55,15 +56,16 @@ public class MessageDb extends SQLiteOpenHelper {
         values.put(USERNAME, message.getUsername());
         values.put(TIME, message.getTime());
         values.put(CONTENT, message.getContent());
+        values.put(CONSERVATIONID,message.getConservationId());
         db.insert(TABLE_NAME, null, values);
         db.close();
 
     }
 
-    public String getMaxTime() {
+    public String getMaxTime(String conservationId) {
         String time = "2018-01-01 00:00:00.000000";
         SQLiteDatabase db = this.getReadableDatabase();
-        String statement = "SELECT TIME FROM " + TABLE_NAME + " ORDER BY " + TIME + " DESC LIMIT 1";
+        String statement = "SELECT "+TIME+" FROM " + TABLE_NAME + " WHERE `"+CONSERVATIONID+"`='"+conservationId+"' ORDER BY " + TIME + " DESC LIMIT 1";
         Cursor cursor = db.rawQuery(statement, null);
         if (cursor != null &&  cursor.moveToFirst()) {
             time = cursor.getString(0);
@@ -76,10 +78,10 @@ public class MessageDb extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<Message> getAllMessage() {
+    public ArrayList<Message> getAllMessage(String conservationId) {
 
         ArrayList<Message> messages = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + TABLE_NAME+ " WHERE `"+CONSERVATIONID+"`='"+conservationId+"'";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor!=null && cursor.moveToFirst()) {
@@ -89,7 +91,7 @@ public class MessageDb extends SQLiteOpenHelper {
                 String userName = cursor.getString(1);
                 String time = cursor.getString(3);
                 String content = cursor.getString(2);
-                Message message = new Message(userId,userName,content,time);
+                Message message = new Message(userId,userName,content,time,conservationId);
                 messages.add(message);
             } while (cursor.moveToNext());
         }

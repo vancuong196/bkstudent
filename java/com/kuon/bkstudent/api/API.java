@@ -1,11 +1,14 @@
 package com.kuon.bkstudent.api;
 import android.util.JsonReader;
 
+import com.kuon.bkstudent.exceptions.CanNotMakeConservationException;
+import com.kuon.bkstudent.exceptions.ConservationNotFound;
 import com.kuon.bkstudent.exceptions.LoginFailedException;
 import com.kuon.bkstudent.exceptions.MessageCannotBeSentException;
 import com.kuon.bkstudent.exceptions.MissingApiParametersException;
 import com.kuon.bkstudent.exceptions.NewMessageNotFoundException;
 import com.kuon.bkstudent.exceptions.NewNotificationNotFoundException;
+import com.kuon.bkstudent.models.Conservation;
 import com.kuon.bkstudent.models.DateRecord;
 import com.kuon.bkstudent.models.Message;
 import com.kuon.bkstudent.models.Notification;
@@ -27,7 +30,7 @@ import org.json.JSONStringer;
 
 public class API {
 
-    private static final String BASE_URL = "http://192.168.43.177/face_recognition/api";
+    private static final String BASE_URL = "http://192.168.1.2/face_recognition/api";
     private static final String RESPONSE_TAG = "response";
     private static final String TOKEN_TAG = "response";
     private static final String REASON_TAG = "response";
@@ -145,9 +148,57 @@ public class API {
 
     }
 
-    public static ArrayList<Message> getNewMessage(String token, String datetime) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, NewMessageNotFoundException {
 
-        String apiFullUrl = BASE_URL+"/chat.php?token="+token+"&datetime="+datetime;
+    public static ArrayList<Conservation> getConservation(String token) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, ConservationNotFound {
+
+        String apiFullUrl = BASE_URL+"/getconservation.php?token="+token;
+
+        JSONArray jsonArray = readJsonArrayFromUrl(apiFullUrl);
+
+        JSONObject jsonResult = jsonArray.getJSONObject(0);
+
+        String response = jsonResult.getString("responde");
+
+        if ("ok".equals(response)){
+
+            int row = jsonResult.getInt("row");
+            if (row == 0){
+                throw new ConservationNotFound("no new notificaiton");
+            } else {
+                ArrayList<Conservation> conservations = new ArrayList<>();
+                for (int i = 1; i < jsonArray.length(); i++) {
+
+                    JSONObject temp = jsonArray.getJSONObject(i);
+
+                    String title = temp.getString("title");
+                    String id = temp.getString("id");
+                    String numberOfChat = temp.getString("chat_number");
+                    String dateTime = temp.getString("date_time");
+                    String creatorName = temp.getString("creator_name");
+                    Conservation conservation = new Conservation(dateTime, creatorName,numberOfChat,title,id);
+                    conservations.add(conservation);
+                    System.out.println("add");
+                }
+                return conservations;
+            }
+        }
+        else{
+            String reason = jsonResult.getString("reason");
+            if (reason!=null&& reason.contains("param")){
+                throw  new MissingApiParametersException("Missing Api Parameter");
+
+            } else
+            {
+                throw  new LoginFailedException("Wrong token");
+
+            }
+        }
+
+    }
+
+    public static ArrayList<Message> getNewMessage(String token,String conservationId, String datetime) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, NewMessageNotFoundException {
+
+        String apiFullUrl = BASE_URL+"/chat.php?token="+token+"&datetime="+datetime+"&conservation_id="+conservationId;
 
         JSONArray jsonArray = readJsonArrayFromUrl(apiFullUrl);
 
@@ -170,7 +221,7 @@ public class API {
                     String userName = temp.getString("user_name");
                     String dateTime = temp.getString("datetime");
                     String content = temp.getString("content");
-                    Message message = new Message(userId,userName,content,dateTime);
+                    Message message = new Message(userId,userName,content,dateTime,conservationId);
                     messages.add(message);
 
                 }
@@ -192,9 +243,39 @@ public class API {
     }
 
 
-    public static Message sendMessage(String token, String content) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, MessageCannotBeSentException {
+    public static boolean makeConservation(String token, String title) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, CanNotMakeConservationException {
 
-        String apiFullUrl = BASE_URL+"/pushmessage.php?token="+token+"&content="+content;
+        String apiFullUrl = BASE_URL+"/pushconservation.php?token="+token+"&title="+title;
+
+        JSONObject jsonResult = readJsonFromUrl(apiFullUrl);
+
+        String response = jsonResult.getString("responde");
+
+        if ("ok".equals(response)){
+
+            return true;
+        }
+        else
+            {
+            String reason = jsonResult.getString("reason");
+            if (reason!=null&& reason.contains("param")){
+                throw  new MissingApiParametersException("Missing Api Parameter");
+
+            } else if (reason!=null&& reason.contains("token"))
+            {
+                throw  new LoginFailedException("Wrong token");
+
+            }
+            else {
+                throw new CanNotMakeConservationException("Can not make conservation");
+            }
+        }
+
+    }
+
+    public static Message sendMessage(String token,String conservationId,String content) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, MessageCannotBeSentException {
+
+        String apiFullUrl = BASE_URL+"/pushmessage.php?token="+token+"&content="+content+"&conservation_id="+conservationId;
 
         JSONObject jsonResult = readJsonFromUrl(apiFullUrl);
 
@@ -205,11 +286,10 @@ public class API {
             String datetime = jsonResult.getString("datetime");
             String userId = jsonResult.getString("user_id");
             String userName = jsonResult.getString("user_name");
-
-            return new Message(userId,userName,content,datetime);
+            return new Message(userId,userName,content,datetime,conservationId);
         }
         else
-            {
+        {
             String reason = jsonResult.getString("reason");
             if (reason!=null&& reason.contains("param")){
                 throw  new MissingApiParametersException("Missing Api Parameter");

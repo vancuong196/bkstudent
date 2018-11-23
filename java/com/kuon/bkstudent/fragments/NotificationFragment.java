@@ -10,11 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kuon.bkstudent.R;
-import com.kuon.bkstudent.adapters.DateHistoryAdapter;
 import com.kuon.bkstudent.adapters.NotificationAdapter;
 import com.kuon.bkstudent.api.API;
 import com.kuon.bkstudent.database.NotificationDb;
@@ -22,7 +20,6 @@ import com.kuon.bkstudent.exceptions.LoginFailedException;
 import com.kuon.bkstudent.exceptions.MissingApiParametersException;
 import com.kuon.bkstudent.exceptions.NewNotificationNotFoundException;
 import com.kuon.bkstudent.models.Notification;
-import com.kuon.bkstudent.models.UserInfo;
 import com.kuon.bkstudent.ultils.SettingManager;
 
 import org.json.JSONException;
