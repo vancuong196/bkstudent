@@ -52,7 +52,7 @@ public class NotificationDb extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(TITLE, notification.getTitle());
         values.put(CONTENT, notification.getContent());
-        values.put(TIME, notification.getTime());
+        values.put(TIME, notification.getRealTime());
         db.insert(TABLE_NAME, null, values);
         db.close();
 
@@ -95,5 +95,9 @@ public class NotificationDb extends SQLiteOpenHelper {
         db.close();
         return notifications;
     }
-
+    public void clear(){
+        String query = "delete from "+TABLE_NAME+" where 1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
+    }
 }

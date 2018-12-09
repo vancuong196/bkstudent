@@ -21,15 +21,15 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
-                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ngay"
-                android:textStyle="bold"
-
+                android:layout_weight="1"
+                android:text="Ngày: "
                 android:textSize="15dp"
-                 />
+
+                android:textStyle="bold" />
             <TextView
                 android:layout_weight="1"
                 android:layout_width="match_parent"
@@ -49,7 +49,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gio co mat:"
+                    android:text="Giờ có mặt:"
                     android:textStyle="bold"
                     android:textSize="15dp"
                     />

@@ -35,7 +35,7 @@
                 android:id="@+id/edt_conservation_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Noi dung cuoc tro chuyen"
+                android:hint="Nhập chủ đề"
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true" />
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Tao"
+            android:text="Tạo"
             android:textStyle="bold" />
         <Button
             android:padding="5dp"
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Huy"
+            android:text="Hủy"
             android:textStyle="bold" />
 
     </LinearLayout>

@@ -27,11 +27,10 @@ import java.util.ArrayList;
 
 public class API {
 
-    private static final String BASE_URL = "http://192.168.1.2/face_recognition/api";
+    private static String BASE_URL = "http://*/face_recognition/api";
     private static final String RESPONSE_TAG = "response";
     private static final String TOKEN_TAG = "response";
     private static final String REASON_TAG = "response";
-
     public static String auth(String username, String password) throws IOException, JSONException, LoginFailedException, MissingApiParametersException {
 
             String apiFullUrl = BASE_URL+"/auth.php?username="+username+"&password="+password;
@@ -54,6 +53,10 @@ public class API {
             }
 
     }
+    public static void setHost(String hostname){
+        BASE_URL = BASE_URL.replace("*",hostname);
+    }
+
     public static UserInfo getInfo(String token) throws IOException, JSONException, LoginFailedException, MissingApiParametersException {
 
         String apiFullUrl = BASE_URL+"/info.php?token="+token;
@@ -63,6 +66,7 @@ public class API {
 
             String name = jsonResult.getString("name");
             String id = jsonResult.getString("id");
+            String birthDay = jsonResult.getString("birthday");
             int total = jsonResult.getInt("total");
             int count = jsonResult.getInt("count");
             double percent = jsonResult.getDouble("percent");
@@ -76,13 +80,18 @@ public class API {
                     for (String a : dates
                             ) {
                         String[] as = a.split(" ");
-                        drs.add(new DateRecord(as[0], as[1]));
+                        if (as.length>1) {
+                            drs.add(new DateRecord(as[0], as[1]));
+                        } else {
+                            drs.add(new DateRecord(as[0], "NA"));
+
+                        }
                     }
                 }
             }
 
 
-            return new UserInfo(name,id,total,count,percent,drs);
+            return new UserInfo(name,id,birthDay,total,count,percent,drs);
         }
         else{
             String reason = jsonResult.getString("reason");
@@ -98,6 +107,28 @@ public class API {
 
     }
 
+
+    public static boolean changePassword(String token, String oldPassword, String newPassword) throws IOException, JSONException,MissingApiParametersException {
+
+        String apiFullUrl = BASE_URL+"/changepassword.php?token="+token+"&newpass="+newPassword+"&oldpass="+oldPassword;
+        JSONObject jsonResult = readJsonFromUrl(apiFullUrl);
+        String response = jsonResult.getString("responde");
+        if ("ok".equals(response)){
+            return true;
+        }
+        else{
+            String reason = jsonResult.getString("reason");
+            if (reason!=null&& reason.contains("param")){
+                throw  new MissingApiParametersException("Missing Api Parameter");
+
+            } else
+            {
+                return false;
+
+            }
+        }
+
+    }
 
     public static ArrayList<Notification> getNewNotification(String token,String datetime) throws IOException, JSONException, LoginFailedException, MissingApiParametersException, NewNotificationNotFoundException {
 

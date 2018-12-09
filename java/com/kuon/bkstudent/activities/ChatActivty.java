@@ -239,13 +239,13 @@ public class ChatActivty extends AppCompatActivity {
 
                         break;
                     case CONNECTION_FAILED:
-                        Toast.makeText(getApplicationContext(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Không thể kết nối đến server",Toast.LENGTH_SHORT).show();
                         break;
                     case LOGIN_FAILED:
-                        Toast.makeText(getApplicationContext(),"Login using token failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Lỗi xác thực",Toast.LENGTH_SHORT).show();
                         break;
                     default:
-                        Toast.makeText(getApplicationContext(),"Cant not send message",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Không thể gửi tin nhắn",Toast.LENGTH_SHORT).show();
                         break;
                 }
 

@@ -45,6 +45,12 @@ public class ConservationFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        new FetchConservationTask(token).execute();
+
+    }
 
     public static ConservationFragment newInstance(String param1, String param2) {
         ConservationFragment fragment = new ConservationFragment();

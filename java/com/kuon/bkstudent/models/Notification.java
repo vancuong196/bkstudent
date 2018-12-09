@@ -5,16 +5,20 @@ public class Notification {
     String time;
     String title;
     String content;
-
+    String realTime;
 
     public Notification(String time, String title, String content) {
 
         this.time = time.substring(0,19);
+        this.realTime = time;
         this.title = title;
         this.content = content.replaceAll("<br>","\n");
 
     }
 
+    public String getRealTime(){
+        return realTime;
+    }
 
     public String getTime() {
         return time;

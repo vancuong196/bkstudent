@@ -42,10 +42,6 @@ public class NotificationFragment extends Fragment {
 
     public static OverviewFragment newInstance(String param1, String param2) {
         OverviewFragment fragment = new OverviewFragment();
-        //  Bundle args = new Bundle();
-        //  args.putString(ARG_PARAM1, param1);
-        // args.putString(ARG_PARAM2, param2);
-        //  fragment.setArguments(args);
         return fragment;
     }
 
@@ -106,8 +102,9 @@ public class NotificationFragment extends Fragment {
             // TODO: attempt authentication against a network service.
 
             String time = notificationDb.getMaxTime();
+            System.out.println(time);
             try {
-                newNotification = API.getNewNotification(token,time);
+                this.newNotification = API.getNewNotification(token,time);
                 System.out.print("Done ------------------------------");
                 if (newNotification==null){
                     errorCode = 1;
@@ -147,7 +144,8 @@ public class NotificationFragment extends Fragment {
 
 
             if (success) {
-                if (newNotification!=null&& newNotification.size()>0){
+                if (this.newNotification!=null&& this.newNotification.size()>0){
+                    System.out.println("new notification found");
                     for (Notification notification:newNotification){
                         notificationDb.addNotification(notification);
                     }
@@ -164,13 +162,13 @@ public class NotificationFragment extends Fragment {
 
                         break;
                     case CONNECTION_FAILED:
-                        Toast.makeText(getActivity(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Không thể kết nối đến server",Toast.LENGTH_SHORT).show();
                         break;
                     case LOGIN_FAILED:
-                        Toast.makeText(getActivity(),"Login using token failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Lỗi xác thực",Toast.LENGTH_SHORT).show();
                         break;
                     default:
-                        Toast.makeText(getActivity(),"New notification not found",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Không có thông báo mới",Toast.LENGTH_SHORT).show();
 
                         break;
                 }

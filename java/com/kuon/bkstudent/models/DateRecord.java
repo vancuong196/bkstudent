@@ -6,7 +6,11 @@ public class DateRecord {
 
     public DateRecord(String date, String time) {
         this.date = date;
-        this.time = time.substring(0,8);
+        if (!time.equals("NA")){
+            this.time = time.substring(0,8);
+        } else {
+            this.time = time;
+        }
     }
 
     public String getDate() {

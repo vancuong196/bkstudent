@@ -49,4 +49,15 @@ public class SettingManager {
         editor.putString(Constant.USERS_TAG, users);
         editor.commit();
     }
+    public void setHost(String host){
+        settings = context.getSharedPreferences("host", Context.MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("hostname", host);
+        editor.commit();
+    }
+    public String getHost(){
+        settings = context.getSharedPreferences("host", Context.MODE_MULTI_PROCESS);
+        String user = settings.getString("hostname", "");
+        return user;
+    }
 }

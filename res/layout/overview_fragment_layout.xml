@@ -20,11 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:scaleType="centerCrop"
-                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,7 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Thong tin"
+                    android:text="Thông tin"
                     android:textColor="#000"
                     android:textStyle="bold"
                     android:textSize="20sp" />
@@ -48,7 +43,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ho va ten:"
+                        android:text="Họ và tên:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -67,7 +62,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ma Sinh Vien:"
+                        android:text="Mã sinh viên:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -86,7 +81,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ngay sinh:"
+                        android:text="Ngày sinh:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -133,7 +128,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Chuyen can"
+                    android:text="Chuyên cần"
                     android:textStyle="bold"
                     android:textColor="#000"
                     android:textSize="20sp" />
@@ -145,7 +140,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tong so ngay:"
+                        android:text="Tổng số lần điểm danh:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -164,7 +159,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="So ngay di hoc:"
+                        android:text="Số buổi có mặt:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -183,7 +178,7 @@
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ti le:"
+                        android:text="Tỉ lệ:"
                         android:textStyle="bold"
                         android:textColor="#555" />
                     <TextView
@@ -216,7 +211,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="Lich su"
+                        android:text="Lịch sử"
                         android:textStyle="bold"
                         android:textColor="#000"
                         android:textSize="20sp" />

@@ -8,15 +8,25 @@ public class UserInfo {
     private int totalDate;
     private int counted;
     private double percent;
+    private String birthDay;
     private ArrayList<DateRecord> dates;
 
-    public UserInfo(String name, String id, int totalDate, int counted, double percent, ArrayList<DateRecord> dates) {
+    public UserInfo(String name, String id, String birthDay, int totalDate, int counted, double percent, ArrayList<DateRecord> dates) {
         this.name = name;
         this.id = id;
         this.totalDate = totalDate;
         this.counted = counted;
         this.percent = percent;
         this.dates = dates;
+        this.birthDay =birthDay;
+    }
+
+    public String getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(String birthDay) {
+        this.birthDay = birthDay;
     }
 
     @Override

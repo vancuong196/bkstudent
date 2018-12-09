@@ -56,7 +56,7 @@ public class MessageDb extends SQLiteOpenHelper {
         values.put(CONTENT, message.getContent());
         values.put(CONSERVATIONID,message.getConservationId());
         db.insert(TABLE_NAME, null, values);
-        db.close();
+
 
     }
 
@@ -67,8 +67,9 @@ public class MessageDb extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(statement, null);
         if (cursor != null &&  cursor.moveToFirst()) {
             time = cursor.getString(0);
-            db.close();
             cursor.close();
+            db.close();
+
             return time;
         } else {
             db.close();
@@ -97,6 +98,11 @@ public class MessageDb extends SQLiteOpenHelper {
         }
         db.close();
         return messages;
+    }
+    public void clear(){
+        String query = "delete from "+TABLE_NAME+" where 1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
     }
 
 }

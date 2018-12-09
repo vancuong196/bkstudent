@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             System.exit(0);
         } else {
             isStop = true;
-            Toast.makeText(this,"Press back again to exit",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Nhấn trở về một lần nữa để thoát",Toast.LENGTH_SHORT).show();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {

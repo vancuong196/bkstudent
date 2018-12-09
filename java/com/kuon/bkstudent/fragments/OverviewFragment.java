@@ -98,7 +98,6 @@ public class OverviewFragment extends Fragment {
             public void onClick(View v) {
                 Intent myIntent = new Intent(getActivity(), ChangePasswordActivity.class);
                 getActivity().startActivity(myIntent);
-                getActivity().finish();
             }
         });
     }
@@ -162,10 +161,19 @@ public class OverviewFragment extends Fragment {
             System.out.println(this.userInfo);
             mEditStudentId.setText(userInfo.getId());
             mEdtStudentName.setText(userInfo.getName());
+            mEdtStudentBirthday.setText(userInfo.getBirthDay());
             //mEdtStudentBirthday.setText(userInfo.
             mEdtCountDate.setText(String.valueOf(userInfo.getCounted()));
             mEdtTotalDate.setText(String.valueOf(userInfo.getTotalDate()));
-            mEdtPercent.setText(String.valueOf(userInfo.getPercent()));
+            String percent = String.valueOf(userInfo.getPercent());
+            if (percent.length()>=5) {
+                mEdtPercent.setText(percent.substring(0, 4) + "%");
+            }
+            else
+                {
+                mEdtPercent.setText(percent + "%");
+            }
+
             mAdpater = new DateHistoryAdapter(userInfo.getDates(),getContext());
             mHistoryListview.setAdapter(mAdpater);
             setListViewHeightBasedOnChildren(mHistoryListview);
@@ -179,10 +187,10 @@ public class OverviewFragment extends Fragment {
 
                         break;
                     case CONNECTION_FAILED:
-                        Toast.makeText(getActivity(),"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Không thể kết nối đến server",Toast.LENGTH_SHORT).show();
                         break;
                     case LOGIN_FAILED:
-                        Toast.makeText(getActivity(),"Login using token failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Lỗi xác thực",Toast.LENGTH_SHORT).show();
                         break;
                 }
 

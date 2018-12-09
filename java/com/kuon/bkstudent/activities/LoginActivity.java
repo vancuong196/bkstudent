@@ -3,6 +3,7 @@ package com.kuon.bkstudent.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,6 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -24,6 +28,9 @@ import android.widget.Toast;
 
 import com.kuon.bkstudent.R;
 import com.kuon.bkstudent.api.API;
+import com.kuon.bkstudent.database.MessageDb;
+import com.kuon.bkstudent.database.NotificationDb;
+import com.kuon.bkstudent.dialogs.EditHostDialog;
 import com.kuon.bkstudent.exceptions.LoginFailedException;
 import com.kuon.bkstudent.exceptions.MissingApiParametersException;
 import com.kuon.bkstudent.ultils.SettingManager;
@@ -45,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEdtPassword;
     private View mProgressView;
     private SettingManager settingManager;
+    private String mOldUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +62,13 @@ public class LoginActivity extends AppCompatActivity {
         settingManager = SettingManager.getInstance(this);
         mEdtID = (AutoCompleteTextView) findViewById(R.id.edt_id);
         //populateAutoComplete();
-        String user = settingManager.getUser();
-        if (user!=""){
-            mEdtID.setText(user);
+        mOldUserID = settingManager.getUser();
+        String host = settingManager.getHost();
+        if (!host.isEmpty()){
+            API.setHost(host);
+        }
+        if (mOldUserID!=""){
+            mEdtID.setText(mOldUserID);
         }
 
         mEdtPassword = (EditText) findViewById(R.id.edt_password);
@@ -145,6 +157,42 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater  = getMenuInflater();
+        menuInflater.inflate(R.menu.login_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==R.id.menu_option_dev){
+            final EditHostDialog edtHostDialog = new EditHostDialog(LoginActivity.this,R.style.dialog_theme);
+            edtHostDialog.show();
+            edtHostDialog.setCancelButtonListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    edtHostDialog.hide();
+                }
+            });
+            edtHostDialog.setOkButtonListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String hostName = edtHostDialog.getHost();
+                    if (hostName.isEmpty()){
+                        edtHostDialog.setError("Hostname can not be empty");
+                    }
+                    else {
+                        settingManager.setHost(hostName);
+                        API.setHost(hostName);
+                        edtHostDialog.hide();
+                    }
+                }
+            });
+        }
+        return true;
+    }
+
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
@@ -175,17 +223,6 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
 
         }
-    }
-
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEdtID.setAdapter(adapter);
     }
 
 
@@ -252,6 +289,12 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 settingManager.setToken(token);
                 settingManager.setUser(this.mId);
+                if (!this.mId.equals(mOldUserID)){
+                    NotificationDb notificationDb = new NotificationDb(getApplicationContext());
+                    notificationDb.clear();
+                    MessageDb messageDb = new MessageDb(getApplicationContext());
+                    messageDb.clear();
+                }
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                 LoginActivity.this.startActivity(myIntent);
                 LoginActivity.this.finish();
@@ -265,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         break;
                     case CONNECTION_FAILED:
-                        Toast.makeText(LoginActivity.this,"Khong the ket noi den server, kiem tra cai dat mang",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"Không thể kết nối đến server",Toast.LENGTH_SHORT).show();
                         break;
                     case LOGIN_FAILED:
                         mEdtPassword.setError(getString(R.string.error_incorrect_password));

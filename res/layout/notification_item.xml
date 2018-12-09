@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thoi gian: "
+                    android:text="Thời gian: "
                     android:textStyle="bold"
                     android:textColor="#555" />
                 <TextView
@@ -49,7 +49,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Noi dung:"
+                    android:text="Nội dung: "
                     android:textStyle="bold"
                     android:textColor="#555" />
 
